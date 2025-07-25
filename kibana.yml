@@ -1,0 +1,38 @@
+# ======================== Kibana Configuration =========================
+#
+# Generated for RHEL 8 Single Node Setup with Elasticsearch
+# Date: 2025-07-22T13:35:00Z
+#
+# ---------------------------------- Server -----------------------------------
+server.port: 5601
+server.host: "0.0.0.0"
+
+
+# -------------------------------- Elasticsearch ------------------------------
+elasticsearch.hosts: ["https://localhost:9200"]
+elasticsearch.requestTimeout: 30000
+elasticsearch.shardTimeout: 30000
+
+# CORRECTED: Enabled certificate verification for a secure connection.
+elasticsearch.ssl.verificationMode: certificate
+elasticsearch.ssl.certificateAuthorities: ["/etc/kibana/certs/elastic-stack-ca.pem"]
+
+# ---------------------------------- Logging ----------------------------------
+logging.appenders:
+  file:
+    type: file
+    fileName: /var/log/kibana/kibana.log
+    layout:
+      type: json
+logging.root:
+  level: info
+
+
+# --------------------------------- Security ----------------------------------
+elasticsearch.username: "kibana_system"
+elasticsearch.password: "changeme"
+
+
+# ---------------------------------- Various ----------------------------------
+pid.file: /var/run/kibana/kibana.pid
+path.data: /var/lib/kibana

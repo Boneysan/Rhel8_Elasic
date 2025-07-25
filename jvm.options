@@ -1,0 +1,22 @@
+# Heap Size
+-Xms8g
+-Xmx8g
+
+# Garbage Collector
+-XX:+UseG1GC
+
+# Heap Dumps
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:HeapDumpPath=/var/lib/elasticsearch
+-XX:ErrorFile=/var/log/elasticsearch/hs_err_%p.log
+
+
+# JVM Optimizations
+-XX:+AlwaysPreTouch
+-server
+
+# Disable Swapping
+-XX:+UseCondCardMark
+
+# Security
+-Dfile.encoding=UTF-8

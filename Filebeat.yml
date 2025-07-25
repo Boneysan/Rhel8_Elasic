@@ -1,0 +1,73 @@
+# ======================== Filebeat Configuration =========================
+#
+# Generated for RHEL 8 Elasticsearch Integration
+# Date: 2025-07-23
+#
+
+# ============================== Filebeat inputs ================================
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/*.log
+    - /var/log/messages
+    - /var/log/secure
+  fields:
+    logtype: system
+  fields_under_root: true
+
+- type: log
+  enabled: true
+  paths:
+    - /var/log/elasticsearch/*.log
+  fields:
+    logtype: elasticsearch
+  fields_under_root: true
+
+# ============================== Filebeat modules ===============================
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: true
+
+# ================================== Outputs ===================================
+output.elasticsearch:
+  # ACTION REQUIRED FOR REMOTE INSTALLATION:
+  # Change 'localhost' to the IP address or hostname of your Elasticsearch server.
+  # For example: hosts: ["https://192.168.1.100:9200"]
+  hosts: ["https://localhost:9200"]
+  index: "filebeat"
+
+  ssl.verification_mode: certificate
+  # ACTION REQUIRED FOR REMOTE INSTALLATION:
+  # You must securely copy the 'elastic-stack-ca.pem' file from your
+  # Elasticsearch server to this remote machine and ensure the install script
+  # places it at the path below.
+  ssl.certificate_authorities: ["/etc/filebeat/certs/elastic-stack-ca.pem"]
+
+  username: "elastic"
+  # ACTION REQUIRED FOR REMOTE INSTALLATION:
+  # The ELASTIC_PASSWORD variable will be set by the install script in an
+  # environment file (/etc/filebeat/filebeat.env) on this remote machine. The password
+  # value must match the 'elastic' user's password on your Elasticsearch cluster.
+  password: "${ELASTIC_PASSWORD}"
+
+# Disable Filebeat's automatic template and ILM setup.
+# This is required because we are managing these centrally on Elasticsearch.
+setup.template.enabled: false
+ilm.enabled: false
+
+# ================================= Processors =================================
+processors:
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - add_docker_metadata: ~
+  - add_kubernetes_metadata: ~
+
+# ================================== Logging ===================================
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
